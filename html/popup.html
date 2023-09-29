@@ -32,7 +32,7 @@
         margin: auto; /* Centering image */
         display: block; /* Required for margin: auto to work */
       }
-      
+
       button {
         margin: auto; /* Centering button */
         display: block; /* Required for margin: auto to work */
@@ -41,17 +41,20 @@
   </head>
   <body>
     <h1>
-      <img src="/icons/48x48.png" alt="YouTube Auto Liker" /> <!-- Centered logo -->
+      <img src="/icons/48x48.png" alt="YouTube Auto Liker" />
+      <!-- Centered logo -->
     </h1>
     <h1>YouTube Auto Liker</h1>
     <h2>Settings</h2>
-    <input type="checkbox" id="toggleEnable" name="toggleEnable" />
+    <input type="checkbox" id="toggleEnable" name="toggleEnable" checked/>
     <label for="toggleEnable">Enable</label>
     <br />
     <label for="delay-text">Delay (in seconds):</label>
     <br />
-    <input id="delay" type="number" value="10" min="1" /> <!-- Centered input -->
-    <button id="setDelay">Save</button> <!-- Centered button -->
+    <input id="delay" type="number" value="10" min="1" />
+    <!-- Centered input -->
+    <button id="setDelay">Save</button>
+    <!-- Centered button -->
     <script src="../js/popup.js"></script>
   </body>
 </html>
