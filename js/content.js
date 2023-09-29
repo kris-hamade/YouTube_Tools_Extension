@@ -44,12 +44,18 @@ const likeFunction = () => {
         return;
     }
 
-    const buttonXpath = '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
-    const buttonResult = document.evaluate(buttonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-    const likeButton = buttonResult.singleNodeValue;
+    // Check if there are ads on the page
+    const adBadge = document.querySelector('.ytp-ad-simple-ad-badge');
 
-    if (likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
-        likeButton.click();
+    if (!adBadge) {
+        // No ads are playing, proceed with your logic
+        const buttonXpath = '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
+        const buttonResult = document.evaluate(buttonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        const likeButton = buttonResult.singleNodeValue;
+
+        if (likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
+            likeButton.click();
+        }
     }
 };
 
