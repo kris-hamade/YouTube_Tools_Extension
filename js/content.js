@@ -10,7 +10,6 @@ const sendErrorMessage = (error) => {
     port.postMessage({ type: 'error', error: error.toString() });
 };
 
-
 // Function to reload settings
 const reloadSettings = () => {
     chrome.storage.sync.get(['delay', 'enabled'], function (data) {
@@ -28,7 +27,6 @@ const reloadSettings = () => {
         }
     });
 };
-
 
 // Call reloadSettings to load initial settings
 reloadSettings();
