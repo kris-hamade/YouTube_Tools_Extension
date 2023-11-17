@@ -2,13 +2,12 @@
 <html>
   <head>
     <style>
-      /* Default to light theme */
       body {
         background-color: white;
         color: black;
-        text-align: center; /* Centering text content */
+        text-align: center; 
         width: 275px;
-        margin: auto; /* Centering block-level container */
+        margin: auto; 
       }
 
       /* Dark theme */
@@ -25,24 +24,23 @@
 
       #delay {
         width: 40px;
-        margin: auto; /* Centering input box */
+        margin: auto; 
       }
 
       img {
-        margin: auto; /* Centering image */
-        display: block; /* Required for margin: auto to work */
+        margin: auto; 
+        display: block; 
       }
 
       button {
-        margin: auto; /* Centering button */
-        display: block; /* Required for margin: auto to work */
+        margin: auto; 
+        display: block; 
       }
     </style>
   </head>
   <body>
     <h1>
       <img src="/icons/48x48.png" alt="YouTube Auto Liker" />
-      <!-- Centered logo -->
     </h1>
     <h1>YouTube Auto Liker</h1>
     <h2>Settings</h2>
@@ -52,9 +50,8 @@
     <label for="delay-text">Delay (in seconds):</label>
     <br />
     <input id="delay" type="number" value="10" min="1" />
-    <!-- Centered input -->
     <button id="setDelay">Save</button>
-    <!-- Centered button -->
+    <p id="version"></p>
     <script src="../js/popup.js"></script>
   </body>
 </html>

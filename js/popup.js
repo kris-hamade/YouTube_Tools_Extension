@@ -4,6 +4,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const setDelayButton = document.getElementById('setDelay');  // Make sure this ID exists in your HTML
     const toggleEnable = document.getElementById('toggleEnable');
 
+    // Get the version number from the manifest
+    const manifestData = chrome.runtime.getManifest();
+    const version = manifestData.version;
+
+    // Display the version number in the popup
+    const versionElement = document.getElementById('version');
+    versionElement.textContent = 'Version: ' + version;
+
     chrome.storage.sync.get(['delay', 'enabled'], function (data) {
         if (chrome.runtime.lastError) {
             console.log("Runtime error: ", chrome.runtime.lastError);
