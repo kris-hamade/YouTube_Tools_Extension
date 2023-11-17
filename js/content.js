@@ -42,39 +42,24 @@ reloadSettings();
 
 // Update settings when received from popup
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    try {
-        console.log("Message received", message);
-        if (message.type === 'updateDelay') {
-            delay = message.value;
-            console.log("Updated delay:", delay);
-        }
-        if (message.type === 'updateEnabled') {
-            isEnabled = message.value;
-            console.log("Updated isEnabled:", isEnabled);
-        }
-    } catch (error) {
-        sendErrorMessage(error);
+    if (message.type === 'updateDelay') {
+        delay = message.value;
+    }
+    if (message.type === 'updateEnabled') {
+        isEnabled = message.value;
     }
 });
 
 const likeFunction = () => {
     try {
-        // Reload settings each time this function runs
         reloadSettings();
 
-        console.log("likeFunction triggered. isEnabled:", isEnabled);
-
         if (!isEnabled) {
-            console.log("Extension is disabled. Exiting function.");
             return;
         }
 
-        // Check if there are ads on the page
         const adBadge = document.querySelector('.ytp-ad-simple-ad-badge');
-        console.log("Ad badge found:", adBadge !== null);
-
         if (!adBadge) {
-            // No ads are playing, proceed with logic
             const likeButtonXpath = '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
             const likeButtonResult = document.evaluate(likeButtonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
             const likeButton = likeButtonResult.singleNodeValue;
@@ -85,19 +70,11 @@ const likeFunction = () => {
 
             if (dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false') {
                 if (likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
-                    console.log("Liking the video now.");
                     likeButton.click();
-                } else {
-                    console.log("Like button is already pressed or not found.");
                 }
-            } else {
-                console.log("Dislike button is pressed or not found.");
             }
-        } else {
-            console.log("Ads are playing, skipping like function.");
         }
     } catch (error) {
-        console.error("Error in likeFunction:", error);
         sendErrorMessage(error);
     }
 };
@@ -106,8 +83,7 @@ const checkForUrlChange = () => {
     const currentUrl = window.location.href;
     if (currentUrl !== lastUrl) {
         lastUrl = currentUrl;
-        playbackTimer = 0; // Reset the timer
-        console.log("URL changed, potentially a new video: ", currentUrl);
+        playbackTimer = 0;
     }
 };
 
@@ -117,7 +93,6 @@ window.addEventListener('popstate', () => {
 
 setInterval(() => {
     if (!isEnabled) {
-        console.log("Extension is disabled. Skipping check.");
         return;
     }
 
@@ -125,10 +100,10 @@ setInterval(() => {
 
     const videoElement = document.querySelector('video');
     if (videoElement && !videoElement.paused) {
-        playbackTimer += 1000; // Increment timer every second
+        playbackTimer += 1000;
         if (playbackTimer >= delay) {
             likeFunction();
             playbackTimer = 0;
         }
     }
-}, 1000); // Check every second
+}, 1000);
