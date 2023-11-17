@@ -6,7 +6,6 @@ const port = chrome.runtime.connect();
 
 // Send error message to background script
 const sendErrorMessage = (error) => {
-    console.log('Sending error message:', error.toString()); // Log the error message being sent
     port.postMessage({ type: 'error', error: error.toString() });
 };
 
