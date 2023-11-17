@@ -61,18 +61,25 @@ const likeFunction = () => {
 
         if (!adBadge) {
             // No ads are playing, proceed with your logic
-            const buttonXpath = '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
-            const buttonResult = document.evaluate(buttonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-            const likeButton = buttonResult.singleNodeValue;
+            const likeButtonXpath = '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
+            const likeButtonResult = document.evaluate(likeButtonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            const likeButton = likeButtonResult.singleNodeValue;
 
-            if (likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
-                likeButton.click();
+            const dislikeButtonXpath = '//*[@id="segmented-dislike-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
+            const dislikeButtonResult = document.evaluate(dislikeButtonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            const dislikeButton = dislikeButtonResult.singleNodeValue;
+
+            // Check if the dislike button has not been clicked
+            if (dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false') {
+                // Check if the like button has not been clicked
+                if (likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
+                    likeButton.click();
+                }
             }
         }
     } catch (error) {
         sendErrorMessage(error);
     }
-
 };
 
 // Call likeFunction based on the delay
