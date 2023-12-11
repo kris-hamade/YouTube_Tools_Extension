@@ -1,5 +1,6 @@
 let delay = 10000; // Default delay of 10 seconds
 let isEnabled = true; // Default state
+let isDebugMode = false; // Default debug mode state
 let playbackTimer = 0;
 let lastUrl = window.location.href;
 
@@ -19,9 +20,16 @@ const sendErrorMessage = (error) => {
     }
 };
 
-// Function to reload settings
+// Custom debug log function
+const debugLog = (...messages) => {
+    if (isDebugMode) {
+        console.log(...messages);
+    }
+};
+
+// Function to reload settings including debug mode
 const reloadSettings = () => {
-    chrome.storage.sync.get(['delay', 'enabled'], function (data) {
+    chrome.storage.sync.get(['delay', 'enabled', 'debugMode'], function (data) {
         if (chrome.runtime.lastError) {
             console.error("Runtime error:", chrome.runtime.lastError);
             return;
@@ -34,10 +42,16 @@ const reloadSettings = () => {
         if (typeof data.enabled !== 'undefined') {
             isEnabled = data.enabled;
         }
+
+        if (typeof data.debugMode !== 'undefined') {
+            isDebugMode = data.debugMode;
+        }
+
+        debugLog("Settings reloaded: ", { delay, isEnabled, isDebugMode });
     });
 };
 
-// Call reloadSettings to load initial settings
+// Call reloadSettings to load initial settings including debug mode
 reloadSettings();
 
 // Update settings when received from popup
@@ -48,6 +62,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === 'updateEnabled') {
         isEnabled = message.value;
     }
+    debugLog("Received message: ", message);
 });
 
 const likeFunction = () => {
@@ -55,33 +70,48 @@ const likeFunction = () => {
         reloadSettings();
 
         if (!isEnabled) {
+            debugLog("Feature is not enabled");
             return;
         }
 
         const adBadge = document.querySelector('.ytp-ad-simple-ad-badge');
         if (!adBadge) {
-            const likeButtonXpath = '//*[@id="segmented-like-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
+            debugLog("No ad badge found, proceeding with like button click");
+
+            const likeButtonXpath = '//*[@id="top-level-buttons-computed"]/segmented-like-dislike-button-view-model/yt-smartimation/div/div/like-button-view-model/toggle-button-view-model/button';
             const likeButtonResult = document.evaluate(likeButtonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
             const likeButton = likeButtonResult.singleNodeValue;
 
-            const dislikeButtonXpath = '//*[@id="segmented-dislike-button"]/ytd-toggle-button-renderer/yt-button-shape/button';
+            const dislikeButtonXpath = '//*[@id="top-level-buttons-computed"]/segmented-like-dislike-button-view-model/yt-smartimation/div/div/dislike-button-view-model/toggle-button-view-model/button';
             const dislikeButtonResult = document.evaluate(dislikeButtonXpath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
             const dislikeButton = dislikeButtonResult.singleNodeValue;
 
+            debugLog("Like Button:", likeButton);
+            debugLog("Dislike Button:", dislikeButton);
+
             if (dislikeButton && dislikeButton.getAttribute('aria-pressed') === 'false') {
                 if (likeButton && likeButton.getAttribute('aria-pressed') === 'false') {
+                    debugLog("Clicking like button");
                     likeButton.click();
+                } else {
+                    debugLog("Like button is already pressed or not found");
                 }
+            } else {
+                debugLog("Dislike button is pressed or not found");
             }
+        } else {
+            debugLog("Ad badge is present, not clicking like button");
         }
     } catch (error) {
         sendErrorMessage(error);
+        debugLog("Error in likeFunction:", error);
     }
 };
 
 const checkForUrlChange = () => {
     const currentUrl = window.location.href;
     if (currentUrl !== lastUrl) {
+        debugLog("URL changed from", lastUrl, "to", currentUrl);
         lastUrl = currentUrl;
         playbackTimer = 0;
     }
@@ -89,6 +119,7 @@ const checkForUrlChange = () => {
 
 window.addEventListener('popstate', () => {
     checkForUrlChange();
+    debugLog("popstate event detected");
 });
 
 setInterval(() => {
@@ -102,6 +133,7 @@ setInterval(() => {
     if (videoElement && !videoElement.paused) {
         playbackTimer += 1000;
         if (playbackTimer >= delay) {
+            debugLog("Triggering likeFunction after delay:", delay);
             likeFunction();
             playbackTimer = 0;
         }
