@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const delayElement = document.getElementById('delay');
     const setDelayButton = document.getElementById('setDelay');  // Make sure this ID exists in your HTML
     const toggleEnable = document.getElementById('toggleEnable');
+    const toggleYoutubeShorts = document.getElementById('toggleYoutubeShorts');
 
     // Get the version number from the manifest
     const manifestData = chrome.runtime.getManifest();
@@ -12,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const versionElement = document.getElementById('version');
     versionElement.textContent = 'Version: ' + version;
 
-    chrome.storage.sync.get(['delay', 'enabled'], function (data) {
+    chrome.storage.sync.get(['delay', 'enabled', 'likeShorts'], function (data) {
         if (chrome.runtime.lastError) {
             console.log("Runtime error: ", chrome.runtime.lastError);
         } else {
@@ -22,6 +23,10 @@ document.addEventListener('DOMContentLoaded', function () {
             }
             if (typeof data.enabled !== 'undefined') {
                 toggleEnable.checked = data.enabled;
+            }
+            // Set the toggle state for liking YouTube Shorts
+            if (typeof data.likeShorts !== 'undefined') {
+                toggleYoutubeShorts.checked = data.likeShorts;
             }
         }
     });
@@ -51,4 +56,18 @@ document.addEventListener('DOMContentLoaded', function () {
         });
         chrome.runtime.sendMessage({ type: 'updateEnabled', value: isEnabled });
     });
+});
+
+// Event listener to save the YouTube Shorts toggle state
+toggleYoutubeShorts.addEventListener('change', function () {
+    console.log("YouTube Shorts toggle clicked");
+    const isShortsEnabled = toggleYoutubeShorts.checked;
+    chrome.storage.sync.set({ 'likeShorts': isShortsEnabled }, function () {
+        if (chrome.runtime.lastError) {
+            console.log("Runtime error: ", chrome.runtime.lastError);
+        } else {
+            console.log('YouTube Shorts enabled state saved:', isShortsEnabled);
+        }
+    });
+    chrome.runtime.sendMessage({ type: 'updateLikeShorts', value: isShortsEnabled });
 });
