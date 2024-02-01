@@ -93,8 +93,12 @@ const likeFunction = () => {
             const likeButton = document.evaluate(likeButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
             const dislikeButton = document.evaluate(dislikeButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-            debugLog("Like Button:", likeButton);
-            debugLog("Dislike Button:", dislikeButton);
+            if (!likeButton) {
+                // Additional debug log if the like button is not found initially
+                debugLog("Trying to find 'Unlike' button as 'I like this' button is not found");
+                likeButton = document.querySelector('button[title="Unlike"]');
+                debugLog("Secondary Like Button (Unlike):", likeButton);
+            }
 
             if (!likeButton || !dislikeButton) {
                 const errorMessage = `Like or Dislike button not found. Like Button: ${likeButton}, Dislike Button: ${dislikeButton}`;
@@ -117,6 +121,7 @@ const likeFunction = () => {
         debugLog("Error in likeFunction:", error);
     }
 };
+
 
 const checkForUrlChange = () => {
     try {
