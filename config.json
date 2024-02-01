@@ -1,4 +1,7 @@
 {
-  "likeButtonSelector": "like-button-view-model",
-  "dislikeButtonSelector": "dislike-button-view-model"
+  "version": 1,
+  "config": {
+    "likeButtonSelector": "like-button-view-model",
+    "dislikeButtonSelector": "dislike-button-view-model"
+  }
 }
