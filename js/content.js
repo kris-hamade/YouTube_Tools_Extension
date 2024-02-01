@@ -3,11 +3,20 @@ import * as Sentry from '@sentry/browser';
 Sentry.init({
     dsn: "https://0cd20cd0af1176800c70f078797e7a3c@o322105.ingest.sentry.io/4505964366004224",
     tracesSampleRate: 1.0,
+    sendDefaultPii: false, // Prevent Sentry from capturing users' IP addresses
+    beforeSend(event, hint) {
+        // Modify or remove event information here
+        if (event.request) {
+            // Anonymize the URL
+            event.request.url = "Anonymized";
+        }
+        return event;
+    }
 });
 
 let delay = 10000; // Default delay of 10 seconds
 let isEnabled = true; // Default state
-let isDebugMode = false; // Default debug mode state
+let isDebugMode = true; // Default debug mode state
 let playbackTimer = 0;
 let lastUrl = window.location.href;
 
@@ -76,18 +85,16 @@ const likeFunction = () => {
         if (!adBadge) {
             debugLog("No ad badge found, proceeding with like button click");
 
-            let likeButton = document.querySelector('button[title="I like this"]');
-            let dislikeButton = document.querySelector('button[title="I dislike this"]');
+            // XPath for like and dislike buttons
+            const likeButtonXPath = '//*[@id="top-level-buttons-computed"]/segmented-like-dislike-button-view-model/yt-smartimation/div/div/like-button-view-model/toggle-button-view-model/button-view-model/button';
+            const dislikeButtonXPath = '//*[@id="top-level-buttons-computed"]/segmented-like-dislike-button-view-model/yt-smartimation/div/div/dislike-button-view-model/toggle-button-view-model/button-view-model/button';
 
-            debugLog("Initial Like Button (I like this):", likeButton);
-            debugLog("Initial Dislike Button (I dislike this):", dislikeButton);
+            // Evaluate XPath and select like and dislike buttons
+            const likeButton = document.evaluate(likeButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            const dislikeButton = document.evaluate(dislikeButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 
-            if (!likeButton) {
-                // Additional debug log if the like button is not found initially
-                debugLog("Trying to find 'Unlike' button as 'I like this' button is not found");
-                likeButton = document.querySelector('button[title="Unlike"]');
-                debugLog("Secondary Like Button (Unlike):", likeButton);
-            }
+            debugLog("Like Button:", likeButton);
+            debugLog("Dislike Button:", dislikeButton);
 
             if (!likeButton || !dislikeButton) {
                 const errorMessage = `Like or Dislike button not found. Like Button: ${likeButton}, Dislike Button: ${dislikeButton}`;
@@ -96,10 +103,7 @@ const likeFunction = () => {
                 return;
             }
 
-            const isLiked = likeButton.getAttribute('aria-pressed') === 'true';
-            debugLog("Is video already liked:", isLiked);
-
-            if (dislikeButton.getAttribute('aria-pressed') === 'false' && !isLiked) {
+            if (dislikeButton.getAttribute('aria-pressed') === 'false' && likeButton.getAttribute('aria-pressed') === 'false') {
                 debugLog("Clicking like button");
                 likeButton.click();
             } else {
@@ -113,7 +117,6 @@ const likeFunction = () => {
         debugLog("Error in likeFunction:", error);
     }
 };
-
 
 const checkForUrlChange = () => {
     try {
