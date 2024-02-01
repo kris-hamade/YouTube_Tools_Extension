@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@sentry/browser": "^7.80.1"
+    "@sentry/browser": "^7.99.0"
   },
   "devDependencies": {
     "@babel/core": "^7.23.3",
