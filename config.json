@@ -1,0 +1,4 @@
+{
+  "likeButtonSelector": "like-button-view-model",
+  "dislikeButtonSelector": "dislike-button-view-model"
+}
