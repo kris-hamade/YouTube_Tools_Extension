@@ -85,20 +85,15 @@ const likeFunction = () => {
         if (!adBadge) {
             debugLog("No ad badge found, proceeding with like button click");
 
-            // XPath for like and dislike buttons
-            const likeButtonXPath = '//*[@id="top-level-buttons-computed"]/segmented-like-dislike-button-view-model/yt-smartimation/div/div/like-button-view-model/toggle-button-view-model/button-view-model/button';
-            const dislikeButtonXPath = '//*[@id="top-level-buttons-computed"]/segmented-like-dislike-button-view-model/yt-smartimation/div/div/dislike-button-view-model/toggle-button-view-model/button-view-model/button';
+            // Using the element names to find the like and dislike buttons
+            const likeButtonViewModel = document.querySelector('like-button-view-model');
+            const likeButton = likeButtonViewModel ? likeButtonViewModel.querySelector('button') : null;
 
-            // Evaluate XPath and select like and dislike buttons
-            const likeButton = document.evaluate(likeButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-            const dislikeButton = document.evaluate(dislikeButtonXPath, document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+            const dislikeButtonViewModel = document.querySelector('dislike-button-view-model');
+            const dislikeButton = dislikeButtonViewModel ? dislikeButtonViewModel.querySelector('button') : null;
 
-            if (!likeButton) {
-                // Additional debug log if the like button is not found initially
-                debugLog("Trying to find 'Unlike' button as 'I like this' button is not found");
-                likeButton = document.querySelector('button[title="Unlike"]');
-                debugLog("Secondary Like Button (Unlike):", likeButton);
-            }
+            debugLog("Like Button:", likeButton);
+            debugLog("Dislike Button:", dislikeButton);
 
             if (!likeButton || !dislikeButton) {
                 const errorMessage = `Like or Dislike button not found. Like Button: ${likeButton}, Dislike Button: ${dislikeButton}`;
@@ -107,11 +102,15 @@ const likeFunction = () => {
                 return;
             }
 
-            if (dislikeButton.getAttribute('aria-pressed') === 'false' && likeButton.getAttribute('aria-pressed') === 'false') {
-                debugLog("Clicking like button");
-                likeButton.click();
+            if (dislikeButton.getAttribute('aria-pressed') === 'false') {
+                if (likeButton.getAttribute('aria-pressed') === 'false') {
+                    debugLog("Clicking like button");
+                    likeButton.click();
+                } else {
+                    debugLog("Like button is already pressed or not found");
+                }
             } else {
-                debugLog("Like button is already pressed or not found");
+                debugLog("Dislike button is pressed or not found");
             }
         } else {
             debugLog("Ad badge is present, not clicking like button");
@@ -121,6 +120,7 @@ const likeFunction = () => {
         debugLog("Error in likeFunction:", error);
     }
 };
+
 
 
 const checkForUrlChange = () => {
