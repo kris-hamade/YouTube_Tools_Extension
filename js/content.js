@@ -16,7 +16,7 @@ Sentry.init({
 
 let delay = 10000; // Default delay of 10 seconds
 let isEnabled = true; // Default state
-let isDebugMode = true; // Default debug mode state
+let isDebugMode = false; // Default debug mode state
 let playbackTimer = 0;
 let lastUrl = window.location.href;
 
