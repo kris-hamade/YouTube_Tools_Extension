@@ -2,7 +2,8 @@ const path = require('path');
 
 module.exports = {
     entry: {
-        content: './js/content.js'
+        content: './js/content.js',
+        background: './js/background.js'
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
