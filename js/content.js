@@ -5,10 +5,16 @@ import * as Sentry from '@sentry/browser';
 Sentry.init({
     dsn: "https://0cd20cd0af1176800c70f078797e7a3c@o322105.ingest.sentry.io/4505964366004224",
     tracesSampleRate: 1.0,
-    sendDefaultPii: false,
-    beforeSend(event, hint) {
+    sendDefaultPii: false, // Ensure default PII is not sent
+    release: process.env.VERSION,
+    beforeSend(event) {
+        // Anonymize request URL
         if (event.request) {
             event.request.url = "Anonymized";
+        }
+        // Completely remove IP address from user info
+        if (event.user) {
+            event.user.ip_address = null; // Or set to an empty string ""
         }
         return event;
     }
@@ -18,7 +24,7 @@ Sentry.init({
 let globalConfig = {};
 let delay = 10000; // Default delay of 10 seconds
 let isEnabled = true; // Feature enable state
-let isDebugMode = false; // Debug mode state
+let isDebugMode = process.env.DEBUG_MODE === true; // Debug mode state
 let playbackTimer = 0; // Timer for playback delay
 let lastUrl = window.location.href; // Store the last URL for comparison
 
@@ -29,16 +35,25 @@ const debugLog = (...messages) => {
     }
 };
 
-function requestConfig() {
+function requestConfig(retries = 5, interval = 2000) {
     return new Promise((resolve, reject) => {
-        chrome.runtime.sendMessage({ action: "getConfig" }, response => {
-            if (response && response.config) {
-                globalConfig = response.config; // Assuming response directly contains the config
-                resolve(response.config); // Resolve with the received config
-            } else {
-                reject(new Error('Failed to fetch configuration from background script.'));
-            }
-        });
+        function attemptFetchConfig(attempt) {
+            chrome.runtime.sendMessage({ action: "getConfig" }, response => {
+                if (response && response.config) {
+                    debugLog("Configuration fetched:", response.config);
+                    globalConfig = response.config;
+                    resolve(response.config);
+                } else if (attempt < retries) {
+                    debugLog(`Retrying fetch config: attempt ${attempt + 1}`);
+                    setTimeout(() => attemptFetchConfig(attempt + 1), interval);
+                } else {
+                    let errorMsg = 'Failed to fetch configuration from background script after multiple attempts.';
+                    debugLog(errorMsg, response);
+                    reject(new Error(errorMsg));
+                }
+            });
+        }
+        attemptFetchConfig(0);
     });
 }
 
@@ -54,11 +69,45 @@ const reloadSettings = () => {
 
 // Listen for messages from the popup or other parts of the extension
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.type === 'updateDelay') delay = message.value;
-    if (message.type === 'updateEnabled') isEnabled = message.value;
-    if (message.type === 'updateDebugMode') isDebugMode = message.value;
     debugLog("Received message:", message);
-    reloadSettings();
+    switch (message.type) {
+        case 'updateDelay':
+        case 'updateEnabled':
+        case 'updateDebugMode':
+        case 'updateConfig':
+            applyMessage(message);
+            break;
+        default:
+            debugLog("Unhandled message type:", message.type);
+    }
+});
+
+function applyMessage(message) {
+    switch (message.type) {
+        case 'updateDelay':
+            delay = message.value;
+            break;
+        case 'updateEnabled':
+            isEnabled = message.value;
+            break;
+        case 'updateDebugMode':
+            isDebugMode = message.value;
+            break;
+        case 'updateConfig':
+            if (message.config) {
+                globalConfig = message.config;
+            }
+            break;
+    }
+    debugLog(`${message.type} applied:`, message.value || message.config);
+    reloadSettings(); // Ensure the latest settings are applied
+}
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    if (message.type === 'updateConfig' && message.config) {
+        globalConfig = message.config;
+        debugLog('Configuration updated from background script:', globalConfig);
+    }
 });
 
 // Main functionality to like a video
@@ -132,6 +181,11 @@ setInterval(() => {
     checkForUrlChange();
 
     const videoElement = document.querySelector('video');
+
+    if (videoElement && videoElement.paused) {
+        requestConfig()
+    }
+
     if (videoElement && !videoElement.paused) {
         playbackTimer += 1000; // Increment playback timer by 1 second
         if (playbackTimer >= delay) {
@@ -142,13 +196,14 @@ setInterval(() => {
     }
 }, 1000); // Check every 1 second
 
-// Use the adjusted requestConfig function
 requestConfig().then(config => {
     debugLog("Configuration fetched and applied at startup:", config);
-    // Any additional startup functionality can be called here
+    reloadSettings(); // Ensure settings are reloaded with fetched config
 }).catch(error => {
     Sentry.captureException(error);
     debugLog("Failed to fetch configuration at startup:", error);
 });
+
+requestConfig()
 
 debugLog("Extension script loaded and initialized.");

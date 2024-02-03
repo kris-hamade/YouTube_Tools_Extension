@@ -1,57 +1,113 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <style>
-      body {
-        background-color: white;
-        color: black;
-        text-align: center; 
-        width: 275px;
-        margin: auto; 
-      }
-
-      /* Dark theme */
-      @media (prefers-color-scheme: dark) {
         body {
-          background-color: black;
-          color: white;
+            background-color: black;
+            color: white;
+            text-align: center;
+            width: 266px;
+            margin: auto;
+            font-family: Arial, sans-serif;
         }
-      }
 
-      #delay-text {
-        width: 50px;
-      }
+        h1 img {
+            padding: 10px;
+            width: 48px;
+            height: 48px;
+            vertical-align: middle;
+        }
 
-      #delay {
-        width: 40px;
-        margin: auto; 
-      }
+        h1, h2 {
+            color: white;
+        }
 
-      img {
-        margin: auto; 
-        display: block; 
-      }
+        /* Custom switch */
+        .switch {
+          position: relative;
+          display: inline-block;
+          width: 60px;
+          height: 34px;
+        }
 
-      button {
-        margin: auto; 
-        display: block; 
-      }
+        .switch input { 
+          opacity: 0;
+          width: 0;
+          height: 0;
+        }
+
+        .slider {
+          position: absolute;
+          cursor: pointer;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: #ccc;
+          -webkit-transition: .4s;
+          transition: .4s;
+        }
+
+        .slider:before {
+          position: absolute;
+          content: "";
+          height: 26px;
+          width: 26px;
+          left: 4px;
+          bottom: 4px;
+          background-color: white;
+          -webkit-transition: .4s;
+          transition: .4s;
+        }
+
+        input:checked + .slider {
+          background-color: red;
+        }
+
+        input:checked + .slider:before {
+          -webkit-transform: translateX(26px);
+          -ms-transform: translateX(26px);
+          transform: translateX(26px);
+        }
+
+        /* Rounded sliders */
+        .slider.round {
+          border-radius: 34px;
+        }
+
+        .slider.round:before {
+          border-radius: 50%;
+        }
+
+        input[type="number"] {
+            width: 80px;
+            margin: 10px auto;
+            font-size: 16px;
+            text-align: center;
+            border: none;
+        }
+
+        label {
+            display: block;
+            margin: 20px auto 10px;
+        }
     </style>
-  </head>
-  <body>
+</head>
+<body>
     <h1>
-      <img src="/icons/48x48.png" alt="YouTube Auto Liker" />
+        <img src="/icons/48x48.png" alt="YouTube Auto Liker" />
     </h1>
     <h1>YouTube Auto Liker</h1>
     <h2>Settings</h2>
-    <input type="checkbox" id="toggleEnable" name="toggleEnable" checked/>
-    <label for="toggleEnable">Enable</label>
+    <!-- Toggle Switch -->
+    <label class="switch">
+        <input type="checkbox" id="toggleEnable" checked>
+        <span class="slider round"></span>
+    </label>
     <br />
-    <label for="delay-text">Delay (in seconds):</label>
-    <br />
-    <input id="delay" type="number" value="10" min="1" />
-    <button id="setDelay">Save</button>
-    <p id="version"></p>
-    <script src="../js/popup.js"></script>
-  </body>
+    <label for="delay" style="margin-top: 30px">Delay (in seconds):</label>
+    <input type="number" id="delay" min="1" value="10" />
+    <p id="version" style="margin-top: 30px"></p>
+    <script src="../dist/popup.js"></script>
+</body>
 </html>
