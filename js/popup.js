@@ -11,6 +11,12 @@ document.addEventListener('DOMContentLoaded', function () {
     const delayElement = document.getElementById('delay');
     const toggleEnable = document.getElementById('toggleEnable');
 
+    // Fetch and display the version number from the manifest
+    const manifest = chrome.runtime.getManifest();
+    const version = manifest.version; // Here we fetch the version
+    const versionElement = document.getElementById('version');
+    versionElement.textContent = 'Version: ' + version; // Display the version
+
     // Function to update and save delay setting
     function updateDelay(value) {
         const delayValue = parseInt(value, 10) * 1000; // Convert to milliseconds
