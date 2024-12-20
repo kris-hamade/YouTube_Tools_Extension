@@ -31,8 +31,5 @@
     },
     "permissions": [
         "storage"
-    ],
-    "host_permissions": [
-        "https://gitlab.com/krishamade/youtubevideoliker/raw/main/config.json"
     ]
 }
