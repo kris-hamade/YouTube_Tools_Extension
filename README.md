@@ -12,7 +12,7 @@ YouTube Auto Liker is a Chrome extension that automatically likes YouTube videos
 
 1. Clone this repository.
 2. Run `npm install` to install the dependencies.
-3. Run `npx webpack --mode production` to build the extension for production use. For development builds, you can omit `--mode production`.
+3. Run `npm run build` to build the extension for production use.
 4. Load the extension into Chrome:
    - Open Chrome and navigate to `chrome://extensions/`.
    - Enable Developer Mode by toggling the switch in the upper-right corner.
