@@ -16,6 +16,12 @@ Sentry.init({
         if (event.user) {
             event.user.ip_address = null; // Or set to an empty string ""
         }
+        
+        // Ignore ResizeObserver events
+        if (event.message && event.message.includes('ResizeObserver')) {
+            return null; // Exclude this event
+        }
+
         return event;
     }
 });
