@@ -39,56 +39,6 @@ function forwardMessageToContentScript(message) {
     });
 }
 
-function sendConfigToAllContentScripts() {
-    chrome.tabs.query({}, (tabs) => {
-        tabs.forEach((tab) => {
-            // Check if the tab's URL is a YouTube page
-            if (tab.url && tab.url.includes("youtube.com")) {
-                chrome.tabs.sendMessage(tab.id, { type: 'updateConfig', config: globalConfig }, () => {
-                    if (chrome.runtime.lastError) {
-                        console.error(`Error sending config to tab ${tab.id}: ${chrome.runtime.lastError.message}`);
-                    } else {
-                        debugLog(`Configuration successfully sent to YouTube tab ${tab.id}.`);
-                    }
-                });
-            }
-        });
-    });
-}
-
-async function fetchAndUpdateConfig() {
-    try {
-        const localConfig = await fetchLocalConfig();
-        debugLog('Local config loaded:', localConfig);
-        globalConfig = localConfig.config;
-        chrome.storage.local.set({ config: globalConfig });
-        sendConfigToAllContentScripts(); // Send config to all content scripts after loading local config
-    } catch (error) {
-        console.error('Error loading local config:', error);
-        Sentry.captureException(error);
-    }
-
-    try {
-        const remoteConfigUrl = 'https://gitlab.com/krishamade/youtubevideoliker/raw/main/config.json';
-        const response = await fetch(remoteConfigUrl);
-        if (!response.ok) throw new Error('Failed to fetch remote config');
-        const fetchedConfig = await response.json();
-        debugLog('Fetched remote config:', fetchedConfig);
-
-        const storedConfig = await fetchStoredConfig();
-        if (!storedConfig.version || fetchedConfig.version > storedConfig.version) {
-            debugLog('Remote config is newer or not found locally, updating stored config');
-            globalConfig = fetchedConfig.config;
-            chrome.storage.local.set({ config: globalConfig }, () => {
-                sendConfigToAllContentScripts(); // Send config to all content scripts after updating
-            });
-        }
-    } catch (error) {
-        console.error('Fetching remote config failed:', error);
-        Sentry.captureException(error);
-    }
-}
-
 async function fetchLocalConfig() {
     const url = chrome.runtime.getURL('../config.json');
     const response = await fetch(url);
@@ -111,6 +61,3 @@ async function fetchStoredConfig() {
         });
     });
 }
-
-fetchAndUpdateConfig(); // Fetch and update configuration on startup
-setInterval(fetchAndUpdateConfig, 60000); // Check for updates periodically
