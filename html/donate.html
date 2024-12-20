@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+      body {
+        background: linear-gradient(135deg, #000000, #1a1a1a);
+        color: #fff;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      h1 {
+        margin-top: 60px;
+        font-size: 3em;
+        letter-spacing: 2px;
+      }
+
+      p {
+        margin: 20px auto;
+        max-width: 500px;
+        font-size: 1.2em;
+        line-height: 1.5;
+        color: #ddd;
+      }
+
+      .donation-container {
+        display: flex;
+        flex-direction: row; /* Changed to row for horizontal layout */
+        justify-content: center; /* Center the icons horizontally */
+        align-items: center;
+        margin-top: 20px;
+      }
+
+      .donation-button {
+        display: inline-flex;
+        align-items: center;
+        padding: 15px;
+        font-size: 18px;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+        border: none;
+        border-radius: 5px;
+        margin: 20px;
+        position: relative;
+        transition: all 0.3s ease;
+      }
+
+      .donation-button img {
+        height: 64px; /* Increased size */
+        width: 64px; /* Increased size */
+      }
+
+      .donation-button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      }
+
+      .donation-button:active {
+        transform: scale(0.95);
+      }
+
+      .coffeeButton {
+        background-color: transparent;
+      }
+
+      .venmoButton {
+        background-color: transparent;
+      }
+
+      .cashAppButton {
+        background-color: transparent;
+      }
+
+      footer {
+        margin-top: 20px;
+        padding: 20px;
+        font-size: 2em;
+        color: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Please Support My Project</h1>
+    <p>
+      Your support helps me continue developing and improving this project. Every contribution allows me to introduce
+      new features, fix bugs, and keep everything running smoothly. If you find my work valuable, consider making a
+      donation!
+    </p>
+    <div class="donation-container">
+      <a class="donation-button coffeeButton" href="https://www.buymeacoffee.com/krishamade" target="_blank">
+        <img src="/icons/buymecoffee.png" alt="Coffee Icon" style="border-radius: 15px;" />
+      </a>
+      <a class="donation-button venmoButton" href="https://venmo.com/kristopher-hamade" target="_blank">
+        <img src="/icons/venmo.png" alt="Venmo Icon" />
+      </a>
+      <a class="donation-button cashAppButton" href="https://cash.app/$khamy22" target="_blank">
+        <img src="/icons/cashapp.png" alt="CashApp Icon" />
+      </a>
+    </div>
+    <footer>Thank you for your support!</footer>
+  </body>
+</html>
