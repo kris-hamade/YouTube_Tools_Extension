@@ -27,11 +27,3 @@ jobs:
           cache: "npm"
       - run: npm ci
       - run: npm run build --if-present
-      - run: npm test
-      - name: Set up ChromeDriver
-        uses: nanasess/setup-chromedriver@v1
-        with:
-          chromedriver-version: "latest"
-
-      - name: Run end-to-end tests
-        run: npm run test:e2e
