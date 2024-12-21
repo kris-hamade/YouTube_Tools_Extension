@@ -123,7 +123,7 @@ const likeFunction = () => {
             debugLog("Feature is not enabled");
             return;
         }
-        const adBadge = document.querySelector('.ytp-ad-simple-ad-badge');
+        const adBadge = document.querySelector(globalConfig.adBadgeSelector);
         if (!adBadge) {
             // Using the element names to find the like and dislike buttons
             const likeButtonViewModel = document.querySelector(globalConfig.likeButtonSelector);
@@ -186,7 +186,7 @@ setInterval(() => {
 
     checkForUrlChange();
 
-    const videoElement = document.querySelector('video');
+    const videoElement = document.querySelector(globalConfig.videoElementSelector);
 
     if (videoElement && videoElement.paused) {
         requestConfig()

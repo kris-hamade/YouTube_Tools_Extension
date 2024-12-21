@@ -3,7 +3,7 @@
   "config": {
     "likeButtonSelector": "like-button-view-model",
     "dislikeButtonSelector": "dislike-button-view-model",
-    "adBadgeSelector": ".ytp-ad-simple-ad-badge",
+    "adBadgeSelector": ".video-ads",
     "videoElementSelector": "video"
   }
 }
