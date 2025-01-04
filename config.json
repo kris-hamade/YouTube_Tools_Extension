@@ -1,9 +1,9 @@
 {
-  "version": 2,
+  "version": 3,
   "config": {
     "likeButtonSelector": "like-button-view-model",
     "dislikeButtonSelector": "dislike-button-view-model",
-    "adBadgeSelector": ".video-ads",
+    "adBadgeSelector": ".ytp-ad-player-overlay-layout",
     "videoElementSelector": "video"
   }
 }
