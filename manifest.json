@@ -8,12 +8,19 @@
     "48": "/icons/48x48.png",
     "128": "/icons/128x128.png"
   },
+  "web_accessible_resources": [
+    {
+      "resources": ["dist/config.json"],
+      "matches": ["https://www.youtube.com/*"]
+    }
+  ],
   "action": {
     "default_icon": "/icons/48x48.png",
     "default_popup": "/html/popup.html"
   },
   "background": {
-    "service_worker": "/dist/background.js"
+    "service_worker": "/dist/background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
