@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     toggleEnable.checked = data.hasOwnProperty("enabled") ? data.enabled : true;
     toggleSubscribedOnly.checked = data.hasOwnProperty('subscribedOnly') ? data.subscribedOnly : false;
-    toggleWaitForAds.checked = data.hasOwnProperty("waitForAds") ? data.waitForAds : false;
+    toggleWaitForAds.checked = data.hasOwnProperty("waitForAds") ? data.waitForAds : true;
 
     debugLog("Initial settings loaded:", data);
   });

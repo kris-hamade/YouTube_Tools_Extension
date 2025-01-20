@@ -1,3 +1,5 @@
+// content.js
+
 // Global variables for configuration + user settings
 let globalConfig = {};
 let isEnabled = true;
@@ -44,26 +46,53 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
  */
 function loadUserSettings() {
   debugLog("Loading user settings from chrome.storage.sync...");
-  chrome.storage.sync.get(["enabled", "subscribedOnly", "waitForAds", "delay"], (data) => {
-    if (chrome.runtime.lastError) {
-      debugLog("Error reading from chrome.storage.sync:", chrome.runtime.lastError);
-      return;
+  chrome.storage.sync.get(
+    ["enabled", "subscribedOnly", "waitForAds", "delay"],
+    (data) => {
+      if (chrome.runtime.lastError) {
+        debugLog("Error reading from chrome.storage.sync:", chrome.runtime.lastError);
+        return;
+      }
+
+      debugLog("chrome.storage.sync data received:", data);
+      isEnabled = data.hasOwnProperty("enabled") ? data.enabled : true;
+      isSubscribedOnly = data.hasOwnProperty("subscribedOnly") ? data.subscribedOnly : false;
+      isWaitForAds = data.hasOwnProperty("waitForAds") ? data.waitForAds : false;
+      delay = data.hasOwnProperty("delay") ? data.delay : 10000;
+
+      debugLog("User settings loaded:", {
+        isEnabled,
+        isSubscribedOnly,
+        isWaitForAds,
+        delay,
+      });
     }
-
-    debugLog("chrome.storage.sync data received:", data);
-    isEnabled = data.hasOwnProperty("enabled") ? data.enabled : true;
-    isSubscribedOnly = data.hasOwnProperty("subscribedOnly") ? data.subscribedOnly : false;
-    isWaitForAds = data.hasOwnProperty("waitForAds") ? data.waitForAds : false;
-    delay = data.hasOwnProperty("delay") ? data.delay : 10000;
-
-    debugLog("User settings loaded:", {
-      isEnabled,
-      isSubscribedOnly,
-      isWaitForAds,
-      delay,
-    });
-  });
+  );
 }
+
+/**
+ * 3a) Listen for changes to user preferences in chrome.storage.sync
+ */
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === "sync") {
+    if (changes.enabled) {
+      isEnabled = changes.enabled.newValue;
+      debugLog("Storage changed: isEnabled =", isEnabled);
+    }
+    if (changes.subscribedOnly) {
+      isSubscribedOnly = changes.subscribedOnly.newValue;
+      debugLog("Storage changed: isSubscribedOnly =", isSubscribedOnly);
+    }
+    if (changes.waitForAds) {
+      isWaitForAds = changes.waitForAds.newValue;
+      debugLog("Storage changed: isWaitForAds =", isWaitForAds);
+    }
+    if (changes.delay) {
+      delay = changes.delay.newValue;
+      debugLog("Storage changed: delay =", delay);
+    }
+  }
+});
 
 /**
  * Helper: Check if an ad is currently playing
@@ -209,7 +238,7 @@ setInterval(() => {
 debugLog("Calling loadUserSettings() on startup...");
 loadUserSettings();
 
-// 6) Also listen for real-time setting updates (from popup, etc.)
+// 6) We also have the original onMessage for 'updateSettings' if needed
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "updateSettings" && message.settings) {
     debugLog("Received updateSettings message:", message.settings);
