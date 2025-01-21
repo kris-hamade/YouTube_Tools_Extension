@@ -60,7 +60,7 @@
         -webkit-transition: 0.4s;
         transition: 0.4s;
       }
-      
+
       .donateButton {
         display: inline-block;
         padding: 10px 20px;
@@ -124,19 +124,100 @@
 
       label {
         display: block;
-        margin: 20px auto 10px;
+      }
+
+      .info-icon path {
+        fill: white;
+      }
+
+      .info-icon {
+        position: relative;
+        display: inline-block;
+      }
+
+      .info-icon .tooltip {
+        visibility: hidden;
+        min-width: 100px;
+        max-width: 150px;
+        background-color: red;
+        color: #fff;
+        text-align: center;
+        border-radius: 6px;
+        padding: 5px 0;
+        position: absolute;
+        bottom: 125%;
+        left: 50%;
+        transform: translateX(-50%);
+        opacity: 0;
+        transition: opacity 0.3s;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.5);
+      }
+      .info-icon .tooltip::after {
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        margin-left: -5px;
+        border-width: 5px;
+        border-style: solid;
+        border-color: black transparent transparent transparent;
+      }
+
+      .info-icon:hover .tooltip {
+        visibility: visible;
+        opacity: 1;
       }
     </style>
   </head>
   <body>
-    <h1>
-      <img src="/icons/48x48.png" alt="YouTube Auto Liker" />
-    </h1>
-    <h1>YouTube Auto Liker</h1>
-    <h2>Settings</h2>
+    <h2 style="text-align: center">
+      <img src="/icons/48x48.png" alt="YouTube Auto Liker" style="width: 24px; height: 24px; vertical-align: middle" />
+      <span style="display: inline-block; margin-left: 8px">YouTube Auto Liker</span>
+    </h2>
     <!-- Toggle Switch -->
+    <h3>Enabled</h3>
     <label class="switch">
       <input type="checkbox" id="toggleEnable" checked />
+      <span class="slider round"></span>
+    </label>
+    <h3>
+      Subscribed Only
+      <span class="info-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 512 512"
+          class="info-icon"
+          style="width: 16px; height: 16px; vertical-align: middle"
+        >
+          <path
+            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+          />
+        </svg>
+        <span class="tooltip">Enable this to like videos only from subscribed channels.</span>
+      </span>
+    </h3>
+    <label class="switch">
+      <input type="checkbox" id="toggleSubscribedOnly" />
+      <span class="slider round"></span>
+    </label>
+    <h3>
+      Wait for Ads
+      <span class="info-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 512 512"
+          class="info-icon"
+          style="width: 16px; height: 16px; vertical-align: middle"
+        >
+          <path
+            d="M256 512A256 256 0 1 0 256 0a256 256 0 1 0 0 512zM216 336l24 0 0-64-24 0c-13.3 0-24-10.7-24-24s10.7-24 24-24l48 0c13.3 0 24 10.7 24 24l0 88 8 0c13.3 0 24 10.7 24 24s-10.7 24-24 24l-80 0c-13.3 0-24-10.7-24-24s10.7-24 24-24zm40-208a32 32 0 1 1 0 64 32 32 0 1 1 0-64z"
+          />
+        </svg>
+        <span class="tooltip">Enable this to wait for ads to finish before liking the video.</span>
+      </span>
+    </h3>
+    <label class="switch">
+      <input type="checkbox" id="toggleWaitForAds" checked />
       <span class="slider round"></span>
     </label>
     <br />

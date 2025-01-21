@@ -4,6 +4,7 @@
     "likeButtonSelector": "like-button-view-model",
     "dislikeButtonSelector": "dislike-button-view-model",
     "adBadgeSelector": ".ytp-ad-player-overlay-layout",
-    "videoElementSelector": "video"
+    "videoElementSelector": "video",
+    "subscribedOnlySelector": "ytd-subscribe-button-renderer[subscribed]"
   }
 }
