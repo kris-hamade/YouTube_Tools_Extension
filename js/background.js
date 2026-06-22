@@ -34,8 +34,28 @@ function debugLog(...args) {
   }
 }
 
+function openSupportPage(details) {
+  if (!["install", "update"].includes(details.reason)) {
+    return;
+  }
+
+  const params = new URLSearchParams({
+    reason: details.reason,
+    version: chrome.runtime.getManifest().version,
+  });
+
+  if (details.previousVersion) {
+    params.set("from", details.previousVersion);
+  }
+
+  chrome.tabs.create({
+    url: chrome.runtime.getURL(`html/donate.html?${params.toString()}`),
+  });
+}
+
 // Example: onInstalled or onStartup, load config.json and broadcast it to content scripts
-chrome.runtime.onInstalled.addListener(() => {
+chrome.runtime.onInstalled.addListener((details) => {
+  openSupportPage(details);
   debugLog("Extension installed. Loading config and notifying content scripts...");
   fetch(chrome.runtime.getURL("dist/config.json"))
     .then((response) => response.json())

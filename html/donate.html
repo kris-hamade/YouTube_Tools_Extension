@@ -5,39 +5,94 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <style>
       body {
-        background: linear-gradient(135deg, #000000, #1a1a1a);
+        background: #0b0b0b;
         color: #fff;
-        text-align: center;
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 0;
+        padding: 0 20px;
+      }
+
+      main {
+        max-width: 860px;
+        margin: 0 auto;
+        padding: 56px 0 32px;
+        text-align: center;
       }
 
       h1 {
-        margin-top: 60px;
-        font-size: 3em;
-        letter-spacing: 2px;
+        margin: 16px 0 12px;
+        font-size: clamp(2rem, 7vw, 3.75rem);
+        letter-spacing: 0;
+        line-height: 1;
       }
 
       p {
-        margin: 20px auto;
-        max-width: 500px;
+        margin: 16px auto;
+        max-width: 620px;
         font-size: 1.2em;
         line-height: 1.5;
         color: #ddd;
       }
 
+      .version-badge {
+        display: inline-block;
+        color: #fff;
+        background: #e50914;
+        border-radius: 999px;
+        padding: 8px 14px;
+        font-size: 0.95rem;
+        font-weight: 700;
+      }
+
+      .update-note {
+        color: #f1f1f1;
+        font-weight: 700;
+      }
+
+      .section {
+        border-top: 1px solid #333;
+        margin-top: 36px;
+        padding-top: 28px;
+      }
+
+      h2 {
+        margin: 0 0 14px;
+        font-size: 1.6rem;
+      }
+
+      .changes {
+        display: grid;
+        gap: 10px;
+        max-width: 620px;
+        margin: 0 auto;
+        padding: 0;
+        list-style: none;
+        text-align: left;
+      }
+
+      .changes li {
+        background: #171717;
+        border: 1px solid #2e2e2e;
+        border-radius: 8px;
+        color: #e7e7e7;
+        line-height: 1.45;
+        padding: 14px 16px;
+      }
+
       .donation-container {
         display: flex;
-        flex-direction: row; /* Changed to row for horizontal layout */
-        justify-content: center; /* Center the icons horizontally */
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
         align-items: center;
+        gap: 24px;
         margin-top: 20px;
       }
 
       .donation-button {
         display: inline-flex;
         align-items: center;
+        justify-content: center;
         padding: 15px;
         font-size: 18px;
         font-weight: bold;
@@ -45,14 +100,13 @@
         text-decoration: none;
         border: none;
         border-radius: 5px;
-        margin: 20px;
         position: relative;
         transition: all 0.3s ease;
       }
 
       .donation-button img {
-        height: 64px; /* Increased size */
-        width: 64px; /* Increased size */
+        height: 64px;
+        width: 64px;
       }
 
       .donation-button:hover {
@@ -65,10 +119,6 @@
       }
 
       .coffeeButton {
-        background-color: transparent;
-      }
-
-      .venmoButton {
         background-color: transparent;
       }
 
@@ -85,23 +135,37 @@
     </style>
   </head>
   <body>
-    <h1>Please Support My Project</h1>
-    <p>
-      Your support helps me continue developing and improving this project. Every contribution allows me to introduce
-      new features, fix bugs, and keep everything running smoothly. If you find my work valuable, consider making a
-      donation!
-    </p>
-    <div class="donation-container">
-      <a class="donation-button coffeeButton" href="https://www.buymeacoffee.com/krishamade" target="_blank">
-        <img src="/icons/buymecoffee.png" alt="Coffee Icon" style="border-radius: 15px;" />
-      </a>
-      <a class="donation-button venmoButton" href="https://venmo.com/kristopher-hamade" target="_blank">
-        <img src="/icons/venmo.png" alt="Venmo Icon" />
-      </a>
-      <a class="donation-button cashAppButton" href="https://cash.app/$khamy22" target="_blank">
-        <img src="/icons/cashapp.png" alt="CashApp Icon" />
-      </a>
-    </div>
-    <footer>Thank you for your support!</footer>
+    <main>
+      <span class="version-badge" id="versionBadge">Version</span>
+      <h1>What&apos;s New</h1>
+      <p class="update-note" id="updateNote">Thanks for supporting YouTube Auto Liker.</p>
+      <p>
+        Your support helps keep YouTube Auto Liker maintained with new features, fixes, and improvements.
+      </p>
+
+      <section class="section" aria-labelledby="changesHeading">
+        <h2 id="changesHeading">Latest Changes</h2>
+        <ul class="changes">
+          <li>Added an automatic support and version-changes page after install or update.</li>
+          <li>Kept quick access to support options from the extension popup.</li>
+          <li>Updated the available support options.</li>
+        </ul>
+      </section>
+
+      <section class="section" aria-labelledby="supportHeading">
+        <h2 id="supportHeading">Support This Project</h2>
+        <div class="donation-container">
+          <a class="donation-button coffeeButton" href="https://www.buymeacoffee.com/krishamade" target="_blank">
+            <img src="../icons/buymecoffee.png" alt="Buy Me a Coffee" style="border-radius: 15px" />
+          </a>
+          <a class="donation-button cashAppButton" href="https://cash.app/$khamy22" target="_blank">
+            <img src="../icons/cashapp.png" alt="Cash App" />
+          </a>
+        </div>
+      </section>
+
+      <footer>Thank you for your support!</footer>
+    </main>
+    <script src="../dist/donate.js"></script>
   </body>
 </html>

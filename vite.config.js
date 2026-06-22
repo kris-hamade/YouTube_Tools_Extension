@@ -10,6 +10,7 @@ export default defineConfig({
         content: resolve(__dirname, "js/content.js"),
         background: resolve(__dirname, "js/background.js"),
         popup: resolve(__dirname, "js/popup.js"),
+        donate: resolve(__dirname, "js/donate.js"),
       },
       output: {
         entryFileNames: "[name].js",
