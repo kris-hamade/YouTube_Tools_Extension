@@ -82,6 +82,20 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     debugLog("Enabled was updated to:", message.value);
   } else if (message.type === "updateDelay") {
     debugLog("Delay was updated to:", message.value);
+  } else if (message.type === "updateSettings" && message.settings) {
+    debugLog("Settings were updated:", message.settings);
+    chrome.tabs.query({ url: "https://www.youtube.com/*" }, (tabs) => {
+      for (const tab of tabs) {
+        chrome.tabs.sendMessage(tab.id, {
+          type: "updateSettings",
+          settings: message.settings,
+        }, () => {
+          if (chrome.runtime.lastError) {
+            debugLog("Could not update tab settings:", chrome.runtime.lastError.message);
+          }
+        });
+      }
+    });
   }
   // ... handle other message types as needed
 });

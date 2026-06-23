@@ -6,6 +6,8 @@ let isEnabled = true;
 let isSubscribedOnly = false;
 let isWaitForAds = false;
 let delay = 10000; // default 10 seconds
+let delayMode = "seconds";
+let delayPercentage = 50;
 let playbackTimer = 0;
 let lastUrl = window.location.href;
 let isDebugMode = true;
@@ -47,7 +49,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 function loadUserSettings() {
   debugLog("Loading user settings from chrome.storage.sync...");
   chrome.storage.sync.get(
-    ["enabled", "subscribedOnly", "waitForAds", "delay"],
+    ["enabled", "subscribedOnly", "waitForAds", "delay", "delayMode", "delayPercentage"],
     (data) => {
       if (chrome.runtime.lastError) {
         debugLog("Error reading from chrome.storage.sync:", chrome.runtime.lastError);
@@ -59,12 +61,16 @@ function loadUserSettings() {
       isSubscribedOnly = data.hasOwnProperty("subscribedOnly") ? data.subscribedOnly : false;
       isWaitForAds = data.hasOwnProperty("waitForAds") ? data.waitForAds : false;
       delay = data.hasOwnProperty("delay") ? data.delay : 10000;
+      delayMode = data.hasOwnProperty("delayMode") ? data.delayMode : "seconds";
+      delayPercentage = data.hasOwnProperty("delayPercentage") ? data.delayPercentage : 50;
 
       debugLog("User settings loaded:", {
         isEnabled,
         isSubscribedOnly,
         isWaitForAds,
         delay,
+        delayMode,
+        delayPercentage,
       });
     }
   );
@@ -75,6 +81,7 @@ function loadUserSettings() {
  */
 chrome.storage.onChanged.addListener((changes, area) => {
   if (area === "sync") {
+    let timingSettingChanged = false;
     if (changes.enabled) {
       isEnabled = changes.enabled.newValue;
       debugLog("Storage changed: isEnabled =", isEnabled);
@@ -89,10 +96,50 @@ chrome.storage.onChanged.addListener((changes, area) => {
     }
     if (changes.delay) {
       delay = changes.delay.newValue;
+      timingSettingChanged = true;
       debugLog("Storage changed: delay =", delay);
+    }
+    if (changes.delayMode) {
+      delayMode = changes.delayMode.newValue;
+      timingSettingChanged = true;
+      debugLog("Storage changed: delayMode =", delayMode);
+    }
+    if (changes.delayPercentage) {
+      delayPercentage = changes.delayPercentage.newValue;
+      timingSettingChanged = true;
+      debugLog("Storage changed: delayPercentage =", delayPercentage);
+    }
+    if (timingSettingChanged) {
+      playbackTimer = 0;
+      debugLog("Timing setting changed, playbackTimer reset.");
     }
   }
 });
+
+function getLikeDelayState(videoElement) {
+  if (delayMode !== "percentage") {
+    debugLog(`PlaybackTimer = ${playbackTimer} / Delay = ${delay}`);
+    return {
+      currentTime: playbackTimer,
+      threshold: delay,
+    };
+  }
+
+  if (!Number.isFinite(videoElement.duration) || videoElement.duration <= 0) {
+    debugLog("Video duration is not ready, skipping percentage delay check.");
+    return null;
+  }
+
+  const threshold = Math.round(videoElement.duration * 1000 * (delayPercentage / 100));
+  const currentTime = Math.round(videoElement.currentTime * 1000);
+  debugLog(
+    `VideoTime = ${currentTime} / PercentDelay = ${threshold} (${delayPercentage}% of ${videoElement.duration.toFixed(1)}s)`
+  );
+  return {
+    currentTime,
+    threshold,
+  };
+}
 
 /**
  * Helper: Check if an ad is currently playing
@@ -225,10 +272,10 @@ setInterval(() => {
 
   // If the video is playing, increment playbackTimer
   playbackTimer += 1000;
-  debugLog(`PlaybackTimer = ${playbackTimer} / Delay = ${delay}`);
+  const likeDelayState = getLikeDelayState(videoElement);
 
-  if (playbackTimer >= delay) {
-    debugLog("playbackTimer exceeded delay, invoking likeFunction...");
+  if (likeDelayState !== null && likeDelayState.currentTime >= likeDelayState.threshold) {
+    debugLog("Like delay threshold reached, invoking likeFunction...");
     likeFunction();
     playbackTimer = 0;
   }
@@ -242,16 +289,30 @@ loadUserSettings();
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (message.type === "updateSettings" && message.settings) {
     debugLog("Received updateSettings message:", message.settings);
+    const timingSettingChanged =
+      message.settings.hasOwnProperty("delay") ||
+      message.settings.hasOwnProperty("delayMode") ||
+      message.settings.hasOwnProperty("delayPercentage");
+
     isEnabled = message.settings.enabled ?? isEnabled;
     isSubscribedOnly = message.settings.subscribedOnly ?? isSubscribedOnly;
     isWaitForAds = message.settings.waitForAds ?? isWaitForAds;
     delay = message.settings.delay ?? delay;
+    delayMode = message.settings.delayMode ?? delayMode;
+    delayPercentage = message.settings.delayPercentage ?? delayPercentage;
+
+    if (timingSettingChanged) {
+      playbackTimer = 0;
+      debugLog("Timing settings updated in real-time, playbackTimer reset.");
+    }
 
     debugLog("Settings updated in real-time:", {
       isEnabled,
       isSubscribedOnly,
       isWaitForAds,
       delay,
+      delayMode,
+      delayPercentage,
     });
   }
 });
